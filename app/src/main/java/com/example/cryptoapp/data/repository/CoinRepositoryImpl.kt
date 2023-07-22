@@ -11,7 +11,7 @@ import com.example.cryptoapp.domain.CoinRepository
 import kotlinx.coroutines.delay
 
 class CoinRepositoryImpl(
-    private val application: Application
+    application: Application
 ) : CoinRepository {
 
     private val coinInfoDao = AppDatabase.getInstance(application).coinPriceInfoDao()
@@ -35,12 +35,15 @@ class CoinRepositoryImpl(
 
     override suspend fun loadData() {
         while (true) {
-            val topCoins = apiService.getTopCoinsInfo(limit = 50)
-            val fromSymbols = mapper.mapNamesListToString(topCoins)
-            val jsonContainer = apiService.getFullPriceList(fSyms = fromSymbols)
-            val coinIfoDtoList = mapper.mapJsonContainerToListCoinInfo(jsonContainer)
-            val dbModelList = coinIfoDtoList.map { mapper.mapDtoToDbModel(it) }
-            coinInfoDao.insertPriceList(dbModelList)
+            try {
+                val topCoins = apiService.getTopCoinsInfo(limit = 50)
+                val fromSymbols = mapper.mapNamesListToString(topCoins)
+                val jsonContainer = apiService.getFullPriceList(fSyms = fromSymbols)
+                val coinIfoDtoList = mapper.mapJsonContainerToListCoinInfo(jsonContainer)
+                val dbModelList = coinIfoDtoList.map { mapper.mapDtoToDbModel(it) }
+                coinInfoDao.insertPriceList(dbModelList)
+            } catch (_: Exception) {
+            }
             delay(10000)
         }
     }
