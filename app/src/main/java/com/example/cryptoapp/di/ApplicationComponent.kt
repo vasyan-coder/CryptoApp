@@ -10,7 +10,8 @@ import dagger.Component
 @Component(
     modules = [
         DataModule::class,
-        ViewModelModule::class
+        ViewModelModule::class,
+        WorkerModule::class
     ]
 )
 @ApplicationScope
